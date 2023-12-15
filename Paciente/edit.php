@@ -1,0 +1,112 @@
+<?php
+    include('../config/config.php');
+    include('Paciente.php');
+    
+    $p = new Paciente();
+    $dp = mysqli_fetch_object($p->getOne($_GET['id'])) ;
+    
+    $date = new DateTime($dp->fecha_sesion);
+    
+    if(isset($_POST) && !empty($_POST)){
+        $_POST['imagen'] = $dp->imagen;
+        
+        if( $_FILES['imagen']['name'] !== '' ){
+            $_POST['imagen'] = saveImage($_FILES);
+        }
+        $update = $p->update($_POST);
+        if ($update){
+            $mensaje = '<div class="alert alert-success" role="alert"> Sesión Modificada con Exito </div>';
+        }else{
+            $mensaje = '<div class="alert alert-dander" role="alert"> Error </div>';        
+        }
+    }    
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <?php include('../menu.php') ?>
+    
+    <div class="container d-flex flex-column justify-content-center aling-items-center">
+        <?php
+        if (isset($mensaje)) {
+            echo $mensaje;
+        }
+        ?>
+        <h1 class="text-center m-5">Modificar Sesión </h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row mb-2">
+                <div class="col-md-6 mb-4">
+                    <input type="text" name="primer_nombre" id="primer_nombre" placeholder="Primer Nombre "
+                        class="form-control" value="<?= $dp->primer_nombre?>" >
+                </div>
+                <div class="col-md-6 mb-4">
+                    <input type="text" name="segundo_nombre" id="segundo_nombre" placeholder="Segundo Nombre"
+                        class="form-control" value="<?= $dp->segundo_nombre?>">
+                </div>
+                <input type="hidden" name="id" value="<?= $dp->id?>"/>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6 mb-3">
+                    <input type="text" name="primer_apellido" id="primer_apellido" placeholder="Primer Apellido"
+                        class="form-control" value="<?= $dp->primer_apellido?>">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="text" name="segundo_apellido" id="segundo_apellido" placeholder="Segundo Apellido"
+                        class="form-control" value="<?= $dp->segundo_apellido?>">
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-6 mb-3">
+                    <input type="email" name="email" id="email" placeholder="Email" class="form-control" value="<?= $dp->email?>">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="number" name="celular" id="celular" placeholder="Número telefonico"
+                        class="form-control" value="<?= $dp->celular ?>">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-12 mb-3">
+                    <textarea name="descripcion" id="descripcion" placeholder="Descripción del Caso"
+                        class="form-control"> <?= $dp->descripcion ?> </textarea>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6 mb-3">
+                    <input type="datetime-local" name="fecha_sesion" id="fecha_sesion" class="form-control" value="<?= $date->format('Y-m-d\TH:i')?>">
+                    
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="text" name="duracion_sesion" id="duracion_sesion" placeholder="Duración de la Sesión"
+                        class="form-control" value="<?= $dp->duracion_sesion?>">
+                </div>
+            </div>
+            <div class="row col-md-6 mb-5">
+                <input type="file" name="imagen" id="imagen" class="form-control" value="<?= $dp->imagen?>">
+            </div>
+            <button class="btn col-md-3 btn-success mb-5">
+                Modificar
+            </button>
+        </form>
+    </div>
+    <?php include('../footer.php') ?>
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</html>
